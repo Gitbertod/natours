@@ -6,7 +6,9 @@ const userRouter = require('./routes/userRoutes')
 
 
 //MIDDLEWARES
-app.use(morgan('dev'));
+if(process.env.NODE_ENV === 'development'){
+    app.use(morgan('dev'));
+}
 app.use(express.json()); //esto es un middleware
 
 app.use((req,res,next)=>{

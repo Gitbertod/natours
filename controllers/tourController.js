@@ -12,6 +12,14 @@ exports.checkID = (req,res,next,val) =>{//middleware para comprobar si el id es 
     next();
 }
 
+exports.checkBodyMiddleware = (req,res, next ) =>{
+    if(!req.body.name ||!req.body.price){
+        return res.status(400)
+        .json({message:'faltan propiedades'})
+    }
+    next()
+}
+
 exports.getAllTours = (req, res) => {
     res.status(200).json({
         status: 'success',
