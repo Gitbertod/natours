@@ -2,7 +2,7 @@ const fs = require('fs')
 const express = require('express');
 const tourController = require('./../controllers/tourController')
 const router = express.Router();
-const authController = require('../controllers/authController')
+const authController = require('../controllers/authController');
 
 // router.param('id',tourController.checkID )
 
