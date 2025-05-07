@@ -86,8 +86,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     }
 
     //4) Check if user changed password after the JWT was issued
-    if(currentUser.changedPasswordAfter(decoded.iat)){
-        return next(new AppError('User recently changed password! Please log in again',401))
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next(new AppError('User recently changed password! Please log in again', 401))
     }
 
     //GRANT ACCESS TO PROTECTED ROUTE
@@ -96,13 +96,31 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 exports.restrictTo = (...roles) => {
-    return (req,res,next) =>{
+    return (req, res, next) => {
         //Roles ["admin","lead-guide"].role="user"
-        if(!roles.includes(req.user.role)){
+        if (!roles.includes(req.user.role)) {
             return next(
                 new AppError('You dont have permision to perform this action', 403)
             )
         }
         next();
     }
+}
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+    // 1) Get user based on posted email
+    const user = await User.findOne({ email: req.body.email })
+    if(!user){
+        return next( new AppError('There is no user with email addres.',404))
+    }
+    
+    // 2) Generate the random reset token
+    const resetToken = user.createPasswordResetToken();
+    await user.save({validateBeforeSave:false});
+
+    // 3) Send it to user's email
+})
+
+exports.resetPassword = (req, res, next) => {
+
 }
