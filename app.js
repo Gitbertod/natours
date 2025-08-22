@@ -1,6 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
-const rateLimit = require('express-rate-limit')
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean')
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -11,23 +14,40 @@ const app = express();
 
 
 // 1) GLOBAL MIDDLEWARES
+
+// Security HTTP Headers
+app.use(helmet())
+
+//Development logging
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
 
+//Limit request from same API
 const limiter = rateLimit({
-    max:100,
+    max: 100,
     windowMs: 60 * 60 * 1000,
     message: 'Too many request from this IP, please try again in an hour'
 });
+app.use('/api', limiter);
 
-app.use('/api',limiter)
 
-app.use(express.json()); //esto es un middleware
+// Body parser
+app.use(express.json({ limit: '10kb' }));
 
+//Data sanitization NoSql query injection
+app.use(mongoSanitize());
+
+//Data sanitization XSS ATTACK
+app.use(xss());
+
+
+//Serving static files
+app.use(express.static(`${__dirname}/public`))
+
+//Test middleware
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
-   
     next()
 })
 
