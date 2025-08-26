@@ -71,7 +71,32 @@ const tourSchema = new mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    startDates: [Date] //aqui se crea un array de fechas
+    startDates: [Date],//aqui se crea un array de fechas
+    startLocation:{
+        //GeoJSON
+        type:{
+            type: String,
+            default:'Point',
+            enum:['Point']
+        },
+        coordinates:[Number], //esto espera un array de numeros  
+        address: String,
+        description: String      
+    },
+    locations:[
+        {
+            type:{
+                type: String,
+                default: 'Point',
+                enum:['Point']
+            },
+            coordinates:[Number],
+            address:String,
+            description:String,
+            day:Number
+        }
+    ]
+     
 }, {
     toJSON: { virtuals: true }, //propiedades virtuales, no se almacenan en la BD
     toObject: { virtuals: true },
