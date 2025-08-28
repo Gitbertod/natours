@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const slugify = require('slugify')
+const slugify = require('slugify');
+//const User = require('./userModel')
 
 const tourSchema = new mongoose.Schema({
     name: {
@@ -95,6 +96,12 @@ const tourSchema = new mongoose.Schema({
             description:String,
             day:Number
         }
+    ],
+    guides:[
+        {
+            type:mongoose.Schema.ObjectId,
+            ref:'User'
+        }
     ]
      
 }, {
@@ -107,10 +114,16 @@ tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7
 });
 //DOCUMENT MIDDLEWARE
-// tourSchema.pre('save', function (next) {
-//     this.slug = slugify(this.name, { lower: true });
+tourSchema.pre('save', function (next) {
+    this.slug = slugify(this.name, { lower: true });
+    next();
+});
+
+// tourSchema.pre('save',async function(next){
+//     const guidesPromises = this.guides.map(async id=> await User.findById(id));
+//     this.guides = await Promise.all(guidesPromises)
 //     next();
-// });
+// })
 
 // tourSchema.pre('save',function(next){
 //     console.log('Will save Document...')
@@ -134,6 +147,15 @@ tourSchema.post(/^find/, function (docs, next) {
     console.log(`Query took ${Date.now() - this.start} milliseconds`)
 
     next();
+})
+
+tourSchema.pre(/^find/,function(next){
+    this.populate({
+        path: 'guides',
+        select: "-__v -PasswordChangedAt"
+    })
+
+    next()
 })
 
 //AGREGATION MIDDLEWARE
