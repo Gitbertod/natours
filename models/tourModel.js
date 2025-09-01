@@ -113,6 +113,14 @@ const tourSchema = new mongoose.Schema({
 tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7
 });
+
+//Virtual populate
+tourSchema.virtual('reviews',{
+    ref:'Review',
+    foreignField:'tour',
+    localField:'_id'
+})
+
 //DOCUMENT MIDDLEWARE
 tourSchema.pre('save', function (next) {
     this.slug = slugify(this.name, { lower: true });
@@ -157,6 +165,7 @@ tourSchema.pre(/^find/,function(next){
 
     next()
 })
+
 
 //AGREGATION MIDDLEWARE
 tourSchema.pre('aggregate', function (next) {
