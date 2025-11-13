@@ -1,5 +1,6 @@
 const Review = require('./../models/reviewModel')
 const catchAsync = require('../utils/catchAsync')
+const factory = require('./handlerFactory')
 
 
 exports.getAllReview = catchAsync(async (req, res, next) => {
@@ -28,3 +29,18 @@ exports.createReview = catchAsync(async (req, res, next,) => {
         data: newReview
     })
 })
+
+exports.deleteReview = factory.deleteOne(Review)
+
+
+// exports.deleteTour = catchAsync(async (req, res, next) => {
+//     const tour = await Tour.findByIdAndDelete(req.params.id)
+
+//     if (!tour) {
+//         return next(new AppError('No tour found with that ID', 404))
+//     }
+//     res.status(204).json({
+//         status: 'success',
+//         data: null
+//     });
+// })
