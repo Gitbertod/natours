@@ -28,6 +28,7 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "nodemon": "^3.1.11"
   }
 }
