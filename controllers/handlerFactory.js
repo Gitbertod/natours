@@ -40,3 +40,7 @@ exports.createOne = Model => catchAsync(async (req, res, next) => {
         }
     })
 });
+
+exports.getOne = (Model, populateOptions) =>{
+
+}
