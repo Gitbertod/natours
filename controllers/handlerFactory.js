@@ -1,5 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError')
+const APIFeatures = require('../utils/apiFeatures')
 
 
 exports.deleteOne = Model => catchAsync(async (req, res, next) => {
@@ -26,7 +27,7 @@ exports.updateOne = Model => catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         data: {
-           data: document
+            data: document
         }
     })
 })
@@ -41,6 +42,42 @@ exports.createOne = Model => catchAsync(async (req, res, next) => {
     })
 });
 
-exports.getOne = (Model, populateOptions) =>{
+exports.getOne = (Model, populateOptions) => catchAsync(async (req, res, next) => {
+    let query = Model.findById(req.params.id)
+    if (populateOptions) query = query.populate(populateOptions)
+    const doc = await query
 
-}
+    if (!doc) {
+        return next(new AppError('No tour found with that ID', 404))
+    }
+    res.status(200).json({
+        status: 'success',
+        data: {
+            doc
+        }
+    })
+})
+
+
+exports.getAll = Model => catchAsync(async (req, res, next) => {
+    
+    //To allow for nested GET REVIEWS ON TOUR (hack)
+    let filter = {}
+    if (req.params.tourId) filter = { tour: req.params.tourId }
+    
+    const features = new APIFeatures(Model.find(), req.query)
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
+    const document = await features.query;
+
+    // SEND RESPONSE
+    res.status(200).json({
+        status: 'success',
+        results: document.length,
+        data: {
+            document
+        }
+    });
+});
