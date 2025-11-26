@@ -5,11 +5,11 @@ const slugify = require('slugify');
 const tourSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, "A tour must have a name"],
-        unique: true,
+        // required: [true, "A tour must have a name"],
+        unique: false,
         trim: true,
         maxlength: [40, 'A tour name must have less or equal then 40 characters'],
-        minlength: [10, 'A tour name must have more or equal then 10 characters'],
+        // minlength: [10, 'A tour name must have more or equal then 10 characters'],
     },
     secretTour: {
         type: Boolean,
@@ -18,16 +18,16 @@ const tourSchema = new mongoose.Schema({
     slug: String,
     duration: {
         type: Number,
-        required: [true, 'A tour must have a duration']
+        // required: [true, 'A tour must have a duration']
 
     },
     maxGroupSize: {
         type: Number,
-        required: [true, 'A tour must have a group size']
+        // required: [true, 'A tour must have a group size']
     },
     difficulty: {
         type: String,
-        required: [true, 'A tour must have a difficulty'],
+        // required: [true, 'A tour must have a difficulty'],
         enum: {
             values: ['easy', 'medium', 'difficult'],
             message: 'Difficulty is either: easy, medium, difficult'
@@ -44,29 +44,29 @@ const tourSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        required: [true, 'A tour must have a price']
+        // required: [true, 'A tour must have a price']
     },
     priceDiscount: { //ESTO ES UN CUSTOM VALIDATOR
         type: Number,
 
-        validate: {
-            validator: function (val) {
-                //esta validacion solo funciona con creacion de un nuevo documento
-                return val < this.price;
-            },
-            message: 'Discount price ({VALUE}) sholud be below regular price'
-        }
+        // validate: {
+        //     validator: function (val) {
+        //         //esta validacion solo funciona con creacion de un nuevo documento
+        //         return val < this.price;
+        //     },
+        //     message: 'Discount price ({VALUE}) sholud be below regular price'
+        // }
     },
     summary: {
         type: String,
         trim: true,
-        required: [true, 'A tour must have a description ']
+        // required: [true, 'A tour must have a description ']
     }, description: {
         type: String,
         trim: true,
     }, imageCover: {
         type: String,
-        required: [true, 'A tour must have a image']
+        // required: [true, 'A tour must have a image']
     }, images: [String], //aqui se genera un array de strings
     createdAt: {
         type: Date,

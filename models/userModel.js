@@ -14,8 +14,8 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'A user must have a email'],
-        unique: true,
-        isLowercase: true,
+        // unique: true,
+        lowercase: true,
         validate: [validator.isEmail, 'please provide a valid email']
     },
     photo: String,
@@ -32,14 +32,14 @@ const userSchema = new mongoose.Schema({
     },
     passwordConfirm: {
         type: String,
-        required: [true, 'A user must have a password'],
-        validate: {
-            //This only works on SAVE!!!
-            validator: function (el) {
-                return el === this.password
-            },
-            message: "Passwords are not the same"
-        }
+        // required: [true, 'A user must have a password'],
+        // validate: {
+        //     //This only works on SAVE!!!
+        //     validator: function (el) {
+        //         return el === this.password
+        //     },
+        //     message: "Passwords are not the same"
+        // }
     },
     passwordChangedAt: Date,
     passwordResetToken: String,
@@ -51,23 +51,30 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-userSchema.pre('save', async function (next) {
-    //Only run this function if password was actually modified
-    if (!this.isModified('password')) return next();
+// userSchema.pre('save', async function (next) {
+//     //Only run this function if password was actually modified
+//     if (!this.isModified('password')) return next();
 
-    //Hash de pasword with cost of 12
-    this.password = await bcrypt.hash(this.password, 12);
+//     //Hash de pasword with cost of 12
+//     this.password = await bcrypt.hash(this.password, 12);
 
-    //delete passwordConfirm field
-    this.passwordConfirm = undefined;
-    next();
-})
+//     //delete passwordConfirm field
+//     this.passwordConfirm = undefined;
+//     next();
+// })
 
-userSchema.pre(/^find/, function (next) {
-    //this points to the current query
-    this.find({active:{$ne:false}})
-    next();
-})
+// userSchema.pre('save',function(next){
+//     if(!this.isModified('password') || this.isNew) return next();
+
+//     this.passwordChangedAt = Date.now() -1000;
+//     next();
+// });
+
+// userSchema.pre(/^find/, function (next) {
+//     //this points to the current query
+//     this.find({active:{$ne:false}})
+//     next();
+// })
 
 userSchema.methods.correctPassword = async function (
     candidatePassword,
