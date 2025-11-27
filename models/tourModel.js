@@ -5,7 +5,7 @@ const slugify = require('slugify');
 const tourSchema = new mongoose.Schema({
     name: {
         type: String,
-        // required: [true, "A tour must have a name"],
+        required: [true, "A tour must have a name"],
         unique: false,
         trim: true,
         maxlength: [40, 'A tour name must have less or equal then 40 characters'],
@@ -27,7 +27,7 @@ const tourSchema = new mongoose.Schema({
     },
     difficulty: {
         type: String,
-        // required: [true, 'A tour must have a difficulty'],
+        required: [true, 'A tour must have a difficulty'],
         enum: {
             values: ['easy', 'medium', 'difficult'],
             message: 'Difficulty is either: easy, medium, difficult'
@@ -44,7 +44,7 @@ const tourSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        // required: [true, 'A tour must have a price']
+        required: [true, 'A tour must have a price']
     },
     priceDiscount: { //ESTO ES UN CUSTOM VALIDATOR
         type: Number,
@@ -109,6 +109,8 @@ const tourSchema = new mongoose.Schema({
     toObject: { virtuals: true },
 }
 );
+
+tourSchema.index({price:1})
 
 tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7
