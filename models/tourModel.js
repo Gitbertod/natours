@@ -6,7 +6,7 @@ const tourSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, "A tour must have a name"],
-        unique: false,
+        unique: true,
         trim: true,
         maxlength: [40, 'A tour name must have less or equal then 40 characters'],
         // minlength: [10, 'A tour name must have more or equal then 10 characters'],
@@ -18,7 +18,7 @@ const tourSchema = new mongoose.Schema({
     slug: String,
     duration: {
         type: Number,
-        // required: [true, 'A tour must have a duration']
+        required: [true, 'A tour must have a duration']
 
     },
     maxGroupSize: {
@@ -73,54 +73,55 @@ const tourSchema = new mongoose.Schema({
         default: Date.now()
     },
     startDates: [Date],//aqui se crea un array de fechas
-    startLocation:{
+    startLocation: {
         //GeoJSON
-        type:{
+        type: {
             type: String,
-            default:'Point',
-            enum:['Point']
+            default: 'Point',
+            enum: ['Point']
         },
-        coordinates:[Number], //esto espera un array de numeros  
+        coordinates: [Number], //esto espera un array de numeros  
         address: String,
-        description: String      
+        description: String
     },
-    locations:[
+    locations: [
         {
-            type:{
+            type: {
                 type: String,
                 default: 'Point',
-                enum:['Point']
+                enum: ['Point']
             },
-            coordinates:[Number],
-            address:String,
-            description:String,
-            day:Number
+            coordinates: [Number],
+            address: String,
+            description: String,
+            day: Number
         }
     ],
-    guides:[
+    guides: [
         {
-            type:mongoose.Schema.ObjectId,
-            ref:'User'
+            type: mongoose.Schema.ObjectId,
+            ref: 'User'
         }
     ]
-     
+
 }, {
     toJSON: { virtuals: true }, //propiedades virtuales, no se almacenan en la BD
     toObject: { virtuals: true },
 }
 );
 
-tourSchema.index({price:1})
+tourSchema.index({ price: 1, ratingsAverage: -1 })
+tourSchema.index({ slug: 1 })
 
 tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7
 });
 
 //Virtual populate
-tourSchema.virtual('reviews',{
-    ref:'Review',
-    foreignField:'tour',
-    localField:'_id'
+tourSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'tour',
+    localField: '_id'
 })
 
 //DOCUMENT MIDDLEWARE
@@ -159,7 +160,7 @@ tourSchema.post(/^find/, function (docs, next) {
     next();
 })
 
-tourSchema.pre(/^find/,function(next){
+tourSchema.pre(/^find/, function (next) {
     this.populate({
         path: 'guides',
         select: "-__v -PasswordChangedAt"
